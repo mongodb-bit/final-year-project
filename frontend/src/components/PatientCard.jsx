@@ -15,6 +15,23 @@ const PatientCard = ({ patient, onViewGraph }) => {
         Status: {patient.status}
       </p>
 
+      {/* ✅ ADD THIS BLOCK */}
+      <div className="mt-3 text-sm text-gray-800">
+        <p>
+          ❤️ Heart Rate:{" "}
+          <span className="font-semibold">
+            {patient.heartRate ? `${patient.heartRate} bpm` : "--"}
+          </span>
+        </p>
+
+        <p>
+          🫁 SpO₂:{" "}
+          <span className="font-semibold">
+            {patient.spo2 ? `${patient.spo2}%` : "--"}
+          </span>
+        </p>
+      </div>
+
       <button
         onClick={() => onViewGraph(patient)}
         className="mt-4 w-full bg-slate-800 text-white py-2 rounded-lg hover:bg-slate-700 transition"

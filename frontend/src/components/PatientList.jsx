@@ -9,14 +9,14 @@ const PatientList = ({ patients, onViewGraph }) => {
   };
 
   const sortedPatients = [...patients].sort(
-    (a, b) => priority[a.status] - priority[b.status]
+    (a, b) => (priority[a.status] || 4) - (priority[b.status] || 4)
   );
 
   return (
     <div className="flex flex-wrap gap-6 mt-6">
       {sortedPatients.map((patient) => (
         <PatientCard
-          key={patient.id}
+          key={patient.device}   // ✅ FIXED
           patient={patient}
           onViewGraph={onViewGraph}
         />

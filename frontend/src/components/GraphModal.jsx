@@ -1,39 +1,34 @@
 import { useEffect, useState } from "react";
+import { socket } from "../socket";   // ✅ USE GLOBAL SOCKET
 import HeartRateChart from "./graphComponents/HeartRateChart";
 import Spo2Chart from "./graphComponents/Spo2Chart";
-
-const generateInitialData = (status) => {
-  const data = [];
-
-  for (let i = 0; i < 60; i++) {
-    let heartBase = 75;
-    let spo2Base = 97;
-
-    if (status === "red") {
-      heartBase = 110;
-      spo2Base = 90;
-    } else if (status === "yellow") {
-      heartBase = 95;
-      spo2Base = 94;
-    }
-
-    data.push({
-      time: i,
-      heartRate: heartBase + Math.floor(Math.random() * 10),
-      spo2: spo2Base + Math.floor(Math.random() * 3),
-    });
-  }
-
-  return data;
-};
 
 const GraphModal = ({ patient, onClose }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (patient) {
-      setData(generateInitialData(patient.status));
-    }
+    if (!patient) return;
+
+    const handleVitalData = (msg) => {
+      if (msg.deviceId === patient.device) {
+        setData((prev) => [
+          ...prev.slice(-50), 
+          {
+            time: Date.now(),  
+            heartRate: msg.heartRate,
+            spo2: msg.spo2,
+          },
+        ]);
+      }
+    };
+
+    // ✅ attach listener
+    socket.on("vitalData", handleVitalData);
+
+    // ✅ cleanup ONLY listener
+    return () => {
+      socket.off("vitalData", handleVitalData);
+    };
   }, [patient]);
 
   if (!patient) return null;
@@ -42,7 +37,7 @@ const GraphModal = ({ patient, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-xl w-[1000px] shadow-xl">
         <h2 className="text-2xl font-bold mb-6">
-          {patient.device} - Last 1 Minute Vitals
+          {patient.device} - Live Vitals
         </h2>
 
         <div className="grid grid-cols-2 gap-6">

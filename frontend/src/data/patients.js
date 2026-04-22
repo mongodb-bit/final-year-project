@@ -7,6 +7,6 @@ export const patientsData = [
 ];
  const k={id:4 ,device : "342" , status :"red"}
 for (let index = 0; index < 100; index++) {
-     patientsData.append(k);
+     patientsData.push(k);
     
 }
